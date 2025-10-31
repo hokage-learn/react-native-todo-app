@@ -65,6 +65,20 @@ Instead of hardcoding in eas.json:
 
 ### Troubleshooting
 
+**Build fails during dependency installation**
+- This is usually a peer dependency issue
+- The project includes `.npmrc` with `legacy-peer-deps=true` to handle this
+- Check the build logs at https://expo.dev/builds for specific errors
+- If issues persist, try:
+  ```bash
+  # Clear node_modules and reinstall locally first
+  rm -rf node_modules package-lock.json
+  npm install --legacy-peer-deps
+  git add . && git commit -m "update dependencies"
+  # Then rebuild
+  npx eas build --platform android --profile production
+  ```
+
 **Build fails with "Convex URL not found"**
 - Make sure you've updated eas.json OR set the EAS secret
 - Verify your Convex URL is correct (run `npx convex dev` to see it)
@@ -74,9 +88,14 @@ Instead of hardcoding in eas.json:
 - Sometimes builds queue - wait a bit longer
 - Try cancelling and rebuilding
 
+**View detailed build logs**
+- Visit https://expo.dev/accounts/hokage_dono/projects/must-do/builds
+- Click on your build to see detailed logs
+- Look for errors in the "Install dependencies" phase
+
 **Want faster build for testing?**
 ```bash
-eas build --platform android --profile preview
+npx eas build --platform android --profile preview
 ```
 
 This builds a preview APK (same functionality, just not production profile).
