@@ -22,12 +22,10 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useConvex } from "convex/react";
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const router = useRouter();
-  const convex = useConvex();
   const todos = useTodos();
   const toggleComplete = useToggleComplete();
   const deleteTodo = useDeleteTodo();
@@ -47,12 +45,17 @@ export default function HomeScreen() {
         if (!convexUrl) {
           setConnectionError(true);
           setIsLoading(false);
+        } else {
+          // URL is set but query hasn't resolved - likely connection issue
+          console.warn("Convex connection timeout - URL is set but query is still undefined");
+          setConnectionError(true);
+          setIsLoading(false);
         }
       } else {
         setIsLoading(false);
         setConnectionError(false);
       }
-    }, 3000); // Wait 3 seconds before showing error
+    }, 5000); // Wait 5 seconds before showing error
 
     return () => clearTimeout(timer);
   }, [todos]);
@@ -182,13 +185,29 @@ export default function HomeScreen() {
       );
     }
     
-    // Show loading only if we have a URL but it's still connecting
+    // Show loading or connection error
     return (
       <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={[styles.loadingText, { color: theme.colors.textSecondary, marginTop: 16 }]}>
-          Connecting to Convex...
+        <Text style={[styles.loadingText, { color: theme.colors.textSecondary, marginTop: 16, marginBottom: 8 }]}>
+          {isLoading && !connectionError ? "Connecting to Convex..." : "Unable to connect to Convex"}
         </Text>
+        {connectionError && (
+          <View style={styles.instructions}>
+            <Text style={[styles.instructionText, { color: theme.colors.textSecondary, fontSize: 12, marginTop: 16 }]}>
+              Make sure:
+            </Text>
+            <Text style={[styles.instructionText, { color: theme.colors.textSecondary, fontSize: 12 }]}>
+              • Convex dev server is running (npx convex dev)
+            </Text>
+            <Text style={[styles.instructionText, { color: theme.colors.textSecondary, fontSize: 12 }]}>
+              • Your .env file has the correct URL
+            </Text>
+            <Text style={[styles.instructionText, { color: theme.colors.textSecondary, fontSize: 12 }]}>
+              • You've restarted the app after setting the URL
+            </Text>
+          </View>
+        )}
       </View>
     );
   }
