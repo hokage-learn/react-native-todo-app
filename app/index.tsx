@@ -2,7 +2,6 @@ import React, { useState, useMemo } from "react";
 import {
   View,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Text,
   RefreshControl,
@@ -14,19 +13,15 @@ import { useTodos, useToggleComplete, useDeleteTodo, useReorderTodos } from "../
 import { Todo } from "../types/todo";
 import { FilterType } from "../types/todo";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { TodoItem } from "../components/TodoItem";
+import { SearchBar } from "../components/SearchBar";
+import { FilterButtons } from "../components/FilterButtons";
+import { EmptyState } from "../components/EmptyState";
 import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-// Temporary placeholder components - will be implemented next
-const TodoItem = ({ item, onToggle, onDelete }: { item: Todo; onToggle: () => void; onDelete: () => void }) => (
-  <View><Text>{item.title}</Text></View>
-);
-const SearchBar = () => null;
-const FilterButtons = ({ filter, setFilter }: { filter: FilterType; setFilter: (f: FilterType) => void }) => null;
-const EmptyState = () => null;
 
 export default function HomeScreen() {
   const { theme } = useTheme();
@@ -115,6 +110,7 @@ export default function HomeScreen() {
             item={item}
             onToggle={() => handleToggle(item._id)}
             onDelete={() => handleDelete(item._id)}
+            onEdit={() => router.push(`/edit-todo/${item._id}`)}
           />
         </TouchableOpacity>
       </ScaleDecorator>
@@ -132,14 +128,14 @@ export default function HomeScreen() {
   return (
     <GestureHandlerRootView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
-        <SearchBar />
+        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
         <ThemeToggle />
       </View>
 
       <FilterButtons filter={filter} setFilter={setFilter} />
 
       {filteredTodos.length === 0 ? (
-        <EmptyState />
+        <EmptyState filter={filter} hasSearchQuery={!!searchQuery.trim()} />
       ) : (
         <DraggableFlatList
           data={filteredTodos}
