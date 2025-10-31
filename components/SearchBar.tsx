@@ -31,7 +31,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         placeholder={placeholder}
         placeholderTextColor={theme.colors.textSecondary}
         accessibilityLabel="Search todos"
-        accessibilityRole="searchbox"
+        accessibilityRole="text"
       />
       <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary }]}>
         <Text style={styles.searchIcon} allowFontScaling={false}>🔍</Text>
