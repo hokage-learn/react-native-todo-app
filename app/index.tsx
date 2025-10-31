@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -22,10 +22,12 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useConvex } from "convex/react";
 
 export default function HomeScreen() {
   const { theme } = useTheme();
   const router = useRouter();
+  const convex = useConvex();
   const todos = useTodos();
   const toggleComplete = useToggleComplete();
   const deleteTodo = useDeleteTodo();
@@ -34,11 +36,39 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [refreshing, setRefreshing] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Add timeout to detect if Convex is not connected
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (todos === undefined) {
+        const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
+        if (!convexUrl) {
+          setConnectionError(true);
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
+        setConnectionError(false);
+      }
+    }, 3000); // Wait 3 seconds before showing error
+
+    return () => clearTimeout(timer);
+  }, [todos]);
+
+  // Reset loading state when todos load
+  useEffect(() => {
+    if (todos !== undefined) {
+      setIsLoading(false);
+      setConnectionError(false);
+    }
+  }, [todos]);
 
   const filteredTodos = useMemo(() => {
-    if (!todos) return [];
+    if (!todoList || todoList.length === 0) return [];
 
-    let filtered = todos;
+    let filtered = todoList;
 
     // Apply filter
     if (filter === "active") {
@@ -58,7 +88,7 @@ export default function HomeScreen() {
     }
 
     return filtered;
-  }, [todos, filter, searchQuery]);
+  }, [todoList, filter, searchQuery]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -118,13 +148,53 @@ export default function HomeScreen() {
     );
   };
 
-  if (todos === undefined) {
+  // Show connection error if Convex is not configured
+  if (connectionError || (isLoading && todos === undefined)) {
+    const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
+    
+    if (!convexUrl) {
+      return (
+        <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
+          <Text style={[styles.errorTitle, { color: theme.colors.text }]}>
+            Convex Not Configured
+          </Text>
+          <Text style={[styles.errorText, { color: theme.colors.textSecondary }]}>
+            Please set up your Convex backend:
+          </Text>
+          <View style={styles.instructions}>
+            <Text style={[styles.instructionText, { color: theme.colors.text }]}>
+              1. Run: npx convex dev
+            </Text>
+            <Text style={[styles.instructionText, { color: theme.colors.text }]}>
+              2. Copy the Convex URL
+            </Text>
+            <Text style={[styles.instructionText, { color: theme.colors.text }]}>
+              3. Create .env file with:
+            </Text>
+            <Text style={[styles.codeText, { color: theme.colors.primary }]}>
+              EXPO_PUBLIC_CONVEX_URL=your-url-here
+            </Text>
+            <Text style={[styles.instructionText, { color: theme.colors.text }]}>
+              4. Restart the app
+            </Text>
+          </View>
+        </View>
+      );
+    }
+    
+    // Show loading only if we have a URL but it's still connecting
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.container, styles.centerContent, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
+        <Text style={[styles.loadingText, { color: theme.colors.textSecondary, marginTop: 16 }]}>
+          Connecting to Convex...
+        </Text>
       </View>
     );
   }
+
+  // Handle case where todos is null (shouldn't happen, but handle gracefully)
+  const todoList = todos || [];
 
   return (
     <GestureHandlerRootView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -169,6 +239,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
   header: {
     flexDirection: "row",
     padding: 16,
@@ -181,6 +256,38 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 12,
     borderWidth: 1,
+  },
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    marginBottom: 24,
+    textAlign: "center",
+  },
+  instructions: {
+    width: "100%",
+    maxWidth: 400,
+  },
+  instructionText: {
+    fontSize: 14,
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  codeText: {
+    fontSize: 12,
+    fontFamily: "monospace",
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: "rgba(0,0,0,0.1)",
+    borderRadius: 8,
+  },
+  loadingText: {
+    fontSize: 16,
+    textAlign: "center",
   },
   fab: {
     position: "absolute",
