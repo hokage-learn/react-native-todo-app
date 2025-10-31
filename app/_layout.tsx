@@ -4,6 +4,7 @@ import { ConvexProvider } from "../utils/convex";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StyleSheet } from "react-native";
+import { ToastProvider } from "../components/Toast";
 import "react-native-reanimated";
 
 function ThemedStack() {
@@ -59,6 +60,7 @@ export default function RootLayout() {
       <ConvexProvider client={convexClient}>
         <ThemeProvider>
           <ThemedStack />
+          <ToastProvider />
         </ThemeProvider>
       </ConvexProvider>
     </GestureHandlerRootView>

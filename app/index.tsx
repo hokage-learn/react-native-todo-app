@@ -77,6 +77,7 @@ export default function HomeScreen() {
   const handleDelete = async (id: string) => {
     try {
       await deleteTodo({ id: id as any });
+      // Toast will be shown via gesture handler animation
     } catch (error) {
       console.error("Failed to delete todo:", error);
     }

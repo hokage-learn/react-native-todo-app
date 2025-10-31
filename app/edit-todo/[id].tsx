@@ -1,13 +1,14 @@
 import React from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../../context/ThemeContext";
 import { TodoForm } from "../../components/TodoForm";
 import { useUpdateTodo } from "../../hooks/useTodos";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { UpdateTodoInput } from "../../types/todo";
 import { Id } from "convex/values";
+import { showToast } from "../../components/Toast";
 
 export default function EditTodoScreen() {
   const { theme } = useTheme();
@@ -23,9 +24,11 @@ export default function EditTodoScreen() {
         id: id as Id<"todos">,
         ...data,
       });
+      showToast.success("Todo updated successfully!");
       router.back();
     } catch (error) {
       console.error("Failed to update todo:", error);
+      showToast.error("Failed to update todo", "Please try again");
       throw error; // Re-throw to let TodoForm handle the error
     }
   };
