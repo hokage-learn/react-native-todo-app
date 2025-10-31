@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
 import { TodoForm } from "../components/TodoForm";
 import { useCreateTodo } from "../hooks/useTodos";
-import { CreateTodoInput } from "../types/todo";
+import { CreateTodoInput, UpdateTodoInput } from "../types/todo";
 import { showToast } from "../components/Toast";
 
 export default function AddTodoScreen() {
@@ -12,9 +12,13 @@ export default function AddTodoScreen() {
   const router = useRouter();
   const createTodo = useCreateTodo();
 
-  const handleSubmit = async (data: CreateTodoInput) => {
+  const handleSubmit = async (data: CreateTodoInput | UpdateTodoInput) => {
     try {
-      await createTodo(data);
+      // Type guard to ensure we have required fields for create
+      if (!("title" in data) || !data.title) {
+        throw new Error("Title is required");
+      }
+      await createTodo(data as CreateTodoInput);
       showToast.success("Todo created successfully!");
       router.back();
     } catch (error) {
