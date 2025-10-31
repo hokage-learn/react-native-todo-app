@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput, StyleSheet, Text } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 
 interface SearchBarProps {
@@ -34,7 +34,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         accessibilityRole="searchbox"
       />
       <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary }]}>
-        <Text style={styles.searchIcon}>🔍</Text>
+        <Text style={styles.searchIcon} allowFontScaling={false}>🔍</Text>
       </View>
     </View>
   );
