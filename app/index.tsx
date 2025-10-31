@@ -6,6 +6,7 @@ import {
   Text,
   RefreshControl,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
@@ -17,6 +18,7 @@ import { TodoItem } from "../components/TodoItem";
 import { SearchBar } from "../components/SearchBar";
 import { FilterButtons } from "../components/FilterButtons";
 import { EmptyState } from "../components/EmptyState";
+import { showToast } from "../components/Toast";
 import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
@@ -110,11 +112,29 @@ export default function HomeScreen() {
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await deleteTodo({ id: id as any });
-    } catch (error) {
-      // Error handled silently - user can retry
-    }
+    const todo = todos?.find((t) => t._id === id);
+    Alert.alert(
+      "Delete Todo",
+      `Are you sure you want to delete "${todo?.title || "this todo"}"? This action cannot be undone.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteTodo({ id: id as any });
+              showToast.success("Todo deleted successfully");
+            } catch (error) {
+              showToast.error("Failed to delete todo", "Please try again");
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleDragEnd = async ({ data }: { data: Todo[] }) => {

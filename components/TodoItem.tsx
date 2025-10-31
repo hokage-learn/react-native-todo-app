@@ -133,14 +133,24 @@ export const TodoItem: React.FC<TodoItemProps> = ({ item, onToggle, onDelete, on
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={onEdit}
-            accessibilityLabel="Edit todo"
-            accessibilityRole="button"
-          >
-            <Text style={{ color: theme.colors.primary }}>✏️</Text>
-          </TouchableOpacity>
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={onEdit}
+              accessibilityLabel="Edit todo"
+              accessibilityRole="button"
+            >
+              <Text style={{ color: theme.colors.primary }}>✏️</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={onDelete}
+              accessibilityLabel="Delete todo"
+              accessibilityRole="button"
+            >
+              <Text style={{ color: theme.colors.error }}>🗑️</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </GestureDetector>
 
@@ -212,9 +222,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
+  actionButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   editButton: {
     padding: 8,
     marginLeft: 8,
+  },
+  deleteButton: {
+    padding: 8,
   },
   deleteBackground: {
     position: "absolute",
