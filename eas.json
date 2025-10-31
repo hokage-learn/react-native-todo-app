@@ -18,8 +18,9 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_CONVEX_URL": "YOUR_CONVEX_URL_HERE"
-      }
+        "EXPO_PUBLIC_CONVEX_URL": "https://curious-oriole-818.convex.cloud"
+      },
+      "node": "20.18.0"
     }
   },
   "submit": {
