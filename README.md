@@ -129,39 +129,130 @@ npx convex dev
 
 ## Building for Production
 
-### Android APK
+### Android APK Build
 
-1. **Install EAS CLI** (if not already installed)
+Follow these steps to build an APK file for Android:
+
+#### Step 1: Install EAS CLI
+
+```bash
+npm install -g eas-cli
+```
+
+#### Step 2: Login to Expo
+
+```bash
+eas login
+```
+
+You'll need an Expo account. If you don't have one, you can create it during login.
+
+#### Step 3: Configure Your Environment Variables
+
+**Important:** Before building, make sure your production Convex URL is set.
+
+1. **Option A: Set in eas.json** (Recommended for production)
+   - Update `eas.json` file and replace `YOUR_CONVEX_URL_HERE` with your actual Convex URL
+   
+2. **Option B: Set via EAS secrets** (Alternative)
    ```bash
-   npm install -g eas-cli
+   eas secret:create --scope project --name EXPO_PUBLIC_CONVEX_URL --value https://your-project.convex.cloud
    ```
 
-2. **Configure EAS**
-   ```bash
-   eas login
-   eas build:configure
-   ```
+#### Step 4: Build the APK
 
-3. **Build APK**
-   ```bash
-   npm run build:apk
-   ```
+```bash
+eas build --platform android --profile production
+```
 
-   Or use EAS directly:
-   ```bash
-   eas build --platform android --profile production
-   ```
+Or use the npm script:
+```bash
+npm run build:apk
+```
 
-4. **Download the APK**
-   - The build will complete on EAS servers
-   - Download link will be provided in the terminal
-   - Or visit [Expo dashboard](https://expo.dev) to download
+**Note:** The first build may take 10-20 minutes as EAS sets up the build environment. Subsequent builds are faster.
+
+#### Step 5: Monitor the Build
+
+- The build process will show progress in the terminal
+- You can also monitor it at [expo.dev/builds](https://expo.dev/builds)
+- You'll receive an email notification when the build completes
+
+#### Step 6: Download the APK
+
+Once the build completes:
+
+1. **Via Terminal:** The download URL will be displayed in the terminal
+2. **Via Dashboard:** Visit [expo.dev/builds](https://expo.dev/builds) and click on your build
+3. Click the "Download" button to get your APK file
+
+#### Alternative: Build Preview APK (Faster)
+
+For a quicker build (internal testing only):
+
+```bash
+eas build --platform android --profile preview
+```
+
+This builds an APK without the production profile (still fully functional for testing).
 
 ### iOS Build
 
 ```bash
 eas build --platform ios
 ```
+
+**Note:** iOS builds require an Apple Developer account ($99/year) and macOS.
+
+### Local Build (Alternative - Advanced)
+
+If you want to build locally instead of using EAS:
+
+```bash
+# Install prebuild dependencies
+npx expo prebuild
+
+# Build APK (requires Android Studio and SDK)
+cd android
+./gradlew assembleRelease
+# APK will be in: android/app/build/outputs/apk/release/app-release.apk
+```
+
+## Submission Checklist
+
+✅ **CRUD Operations**
+- [x] Create todos with title, description, and due date
+- [x] Read/display todos in real-time
+- [x] Update todos (edit title, description, due date, completion status)
+- [x] Delete todos (swipe-to-delete functionality)
+
+✅ **Theme Switcher**
+- [x] Light and dark themes implemented
+- [x] Smooth transition animations
+- [x] Theme preference persists across app restarts
+- [x] All UI elements respect theme (backgrounds, text, buttons, cards)
+
+✅ **Real-time Updates**
+- [x] All CRUD operations sync in real-time via Convex
+- [x] Changes appear instantly across devices
+- [x] Proper error handling for network issues
+
+✅ **Code Quality**
+- [x] Clean, modular code structure
+- [x] TypeScript for type safety
+- [x] Proper error handling throughout
+- [x] Code comments for complex logic
+
+✅ **Accessibility**
+- [x] Accessibility labels on interactive elements
+- [x] Proper contrast ratios for both themes
+- [x] Screen reader support
+
+✅ **Documentation**
+- [x] Comprehensive README with setup instructions
+- [x] Build commands documented
+- [x] Environment variables configuration explained
+- [x] Convex setup steps included
 
 ## Convex Setup Details
 
@@ -213,13 +304,31 @@ The app uses a simple schema with a `todos` table:
 
 ## Environment Variables
 
-Create a `.env` file with:
+### Development
+
+Create a `.env` file in the root directory with:
 
 ```env
 EXPO_PUBLIC_CONVEX_URL=https://your-project.convex.cloud
 ```
 
-**Note:** The `.env` file should be in `.gitignore` and not committed to version control.
+**Note:** 
+- The `.env` file should be in `.gitignore` and not committed to version control
+- For development, you can get your Convex URL by running `npx convex dev`
+- The URL will be displayed in the terminal output
+
+### Production Build
+
+For production builds via EAS, you have two options:
+
+**Option 1: Set in eas.json** (Already configured)
+- Update the `production` profile in `eas.json`
+- Replace `YOUR_CONVEX_URL_HERE` with your actual Convex URL
+
+**Option 2: Use EAS Secrets** (Recommended for CI/CD)
+```bash
+eas secret:create --scope project --name EXPO_PUBLIC_CONVEX_URL --value https://your-project.convex.cloud
+```
 
 ## Technologies Used
 
