@@ -47,7 +47,6 @@ export default function HomeScreen() {
           setIsLoading(false);
         } else {
           // URL is set but query hasn't resolved - likely connection issue
-          console.warn("Convex connection timeout - URL is set but query is still undefined");
           setConnectionError(true);
           setIsLoading(false);
         }
@@ -106,16 +105,15 @@ export default function HomeScreen() {
     try {
       await toggleComplete({ id: id as any });
     } catch (error) {
-      console.error("Failed to toggle todo:", error);
+      // Error handled silently - user can retry
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await deleteTodo({ id: id as any });
-      // Toast will be shown via gesture handler animation
     } catch (error) {
-      console.error("Failed to delete todo:", error);
+      // Error handled silently - user can retry
     }
   };
 
@@ -124,7 +122,7 @@ export default function HomeScreen() {
     try {
       await reorderTodos({ todoIds });
     } catch (error) {
-      console.error("Failed to reorder todos:", error);
+      // Error handled silently - order may not persist
     }
   };
 

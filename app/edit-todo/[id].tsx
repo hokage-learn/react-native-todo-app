@@ -27,7 +27,6 @@ export default function EditTodoScreen() {
       showToast.success("Todo updated successfully!");
       router.back();
     } catch (error) {
-      console.error("Failed to update todo:", error);
       showToast.error("Failed to update todo", "Please try again");
       throw error; // Re-throw to let TodoForm handle the error
     }

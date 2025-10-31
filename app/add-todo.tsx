@@ -22,7 +22,6 @@ export default function AddTodoScreen() {
       showToast.success("Todo created successfully!");
       router.back();
     } catch (error) {
-      console.error("Failed to create todo:", error);
       showToast.error("Failed to create todo", "Please try again");
       throw error; // Re-throw to let TodoForm handle the error
     }

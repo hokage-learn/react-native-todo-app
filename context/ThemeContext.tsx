@@ -77,7 +77,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           setThemeModeState(systemColorScheme);
         }
       } catch (error) {
-        console.error("Failed to load theme:", error);
+        // Theme loading failed, using default
       } finally {
         setIsLoaded(true);
       }
@@ -89,8 +89,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   // Save theme preference when it changes
   useEffect(() => {
     if (isLoaded) {
-      AsyncStorage.setItem(THEME_STORAGE_KEY, themeMode).catch((error) => {
-        console.error("Failed to save theme:", error);
+      AsyncStorage.setItem(THEME_STORAGE_KEY, themeMode).catch(() => {
+        // Theme saving failed silently
       });
     }
   }, [themeMode, isLoaded]);

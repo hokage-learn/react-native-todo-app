@@ -65,7 +65,6 @@ export const TodoForm: React.FC<TodoFormProps> = ({
         setErrors(fieldErrors);
       } else {
         Alert.alert("Error", "Failed to save todo. Please try again.");
-        console.error("Form submission error:", error);
       }
     } finally {
       setIsSubmitting(false);
