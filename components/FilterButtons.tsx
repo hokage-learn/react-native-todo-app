@@ -2,24 +2,33 @@ import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 import { FilterType } from "../types/todo";
+import { Todo } from "../types/todo";
 
 interface FilterButtonsProps {
   filter: FilterType;
   setFilter: (filter: FilterType) => void;
+  todos?: Todo[];
 }
 
-export const FilterButtons: React.FC<FilterButtonsProps> = ({ filter, setFilter }) => {
+export const FilterButtons: React.FC<FilterButtonsProps> = ({ filter, setFilter, todos = [] }) => {
   const { theme } = useTheme();
 
-  const filters: { label: string; value: FilterType }[] = [
-    { label: "All", value: "all" },
-    { label: "Active", value: "active" },
-    { label: "Completed", value: "completed" },
+  // Calculate counts for each filter
+  const counts = {
+    all: todos.length,
+    active: todos.filter((todo) => !todo.completed).length,
+    completed: todos.filter((todo) => todo.completed).length,
+  };
+
+  const filters: { label: string; value: FilterType; count: number }[] = [
+    { label: "All", value: "all", count: counts.all },
+    { label: "Active", value: "active", count: counts.active },
+    { label: "Completed", value: "completed", count: counts.completed },
   ];
 
   return (
     <View style={styles.container}>
-      {filters.map(({ label, value }) => {
+      {filters.map(({ label, value, count }) => {
         const isActive = filter === value;
         return (
           <TouchableOpacity
@@ -32,7 +41,7 @@ export const FilterButtons: React.FC<FilterButtonsProps> = ({ filter, setFilter 
               },
             ]}
             onPress={() => setFilter(value)}
-            accessibilityLabel={`Filter by ${label.toLowerCase()}`}
+            accessibilityLabel={`Filter by ${label.toLowerCase()}, ${count} items`}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
           >
@@ -45,7 +54,7 @@ export const FilterButtons: React.FC<FilterButtonsProps> = ({ filter, setFilter 
                 },
               ]}
             >
-              {label}
+              {label} ({count})
             </Text>
           </TouchableOpacity>
         );

@@ -68,6 +68,9 @@ export default function HomeScreen() {
     }
   }, [todos]);
 
+  // Handle case where todos is null (shouldn't happen, but handle gracefully)
+  const todoList = todos || [];
+
   const filteredTodos = useMemo(() => {
     if (!todoList || todoList.length === 0) return [];
 
@@ -212,9 +215,6 @@ export default function HomeScreen() {
     );
   }
 
-  // Handle case where todos is null (shouldn't happen, but handle gracefully)
-  const todoList = todos || [];
-
   return (
     <GestureHandlerRootView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
@@ -222,7 +222,7 @@ export default function HomeScreen() {
         <ThemeToggle />
       </View>
 
-      <FilterButtons filter={filter} setFilter={setFilter} />
+      <FilterButtons filter={filter} setFilter={setFilter} todos={todoList} />
 
       {filteredTodos.length === 0 ? (
         <EmptyState filter={filter} hasSearchQuery={!!searchQuery.trim()} />
