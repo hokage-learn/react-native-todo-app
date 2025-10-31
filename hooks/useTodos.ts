@@ -2,7 +2,7 @@ import { useQuery, useMutation } from "convex/react";
 // Note: convex/_generated/api will be created when you run 'npx convex dev'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - Generated file
-import { api } from "../../convex/_generated/api";
+import { api } from "../convex/_generated/api";
 import { CreateTodoInput, UpdateTodoInput } from "../types/todo";
 
 export const useTodos = () => {

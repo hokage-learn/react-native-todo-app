@@ -5,7 +5,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { TodoForm } from "../../components/TodoForm";
 import { useUpdateTodo } from "../../hooks/useTodos";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../convex/_generated/api";
 import { UpdateTodoInput } from "../../types/todo";
 import { Id } from "convex/values";
 import { showToast } from "../../components/Toast";
